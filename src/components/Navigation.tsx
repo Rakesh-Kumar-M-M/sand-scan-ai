@@ -6,7 +6,8 @@ export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { name: "Dashboard", href: "#dashboard" },
+    { name: "Home", href: "/" },
+    { name: "Analysis", href: "/analysis" },
     { name: "Modules", href: "#modules" },
     { name: "Research", href: "#research" },
     { name: "Community", href: "#community" },

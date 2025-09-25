@@ -89,8 +89,8 @@ export const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" variant="secondary" className="shadow-ocean">
-                Explore Data Dashboard
+              <Button size="lg" variant="secondary" className="shadow-ocean" asChild>
+                <a href="/analysis">Start Analysis</a>
               </Button>
               <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
                 Learn More
@@ -127,11 +127,11 @@ export const HeroSection = () => {
                   </div>
 
                   <Button 
-                    onClick={handleAnalyze}
                     className="w-full bg-gradient-ocean hover:shadow-ocean transition-all duration-300"
                     size="lg"
+                    asChild
                   >
-                    Analyze with AI
+                    <a href="/analysis">Analyze with AI</a>
                   </Button>
                 </div>
               )}
