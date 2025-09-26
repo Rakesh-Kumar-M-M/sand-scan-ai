@@ -67,12 +67,13 @@ export const ModulesSection = () => {
           {modules.map((module, index) => (
             <Card key={index} className="group hover:shadow-card transition-all duration-300 border-0 shadow-gentle overflow-hidden">
               {module.image && (
-                <div className="h-48 overflow-hidden">
+                <div className="relative h-48 overflow-hidden">
                   <img 
                     src={module.image} 
                     alt={module.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
                 </div>
               )}
               
@@ -92,7 +93,7 @@ export const ModulesSection = () => {
                 <div className="space-y-2">
                   {module.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-primary rounded-full" />
+                      <div className="w-2 h-2 bg-primary rounded-full shadow-[0_0_0_2px_rgba(255,255,255,0.4)_inset]" />
                       <span className="text-sm">{feature}</span>
                     </div>
                   ))}

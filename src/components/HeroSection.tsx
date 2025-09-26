@@ -10,13 +10,13 @@ export const HeroSection = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroImage})` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/80 via-primary/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-primary/70 to-primary/30" />
       </div>
 
       <div className="relative container mx-auto px-6 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
-          <div className="space-y-8 text-white">
+          <div className="space-y-8 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)]">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
                 AI-Powered
@@ -24,7 +24,7 @@ export const HeroSection = () => {
                   Coastal Monitoring
                 </span>
               </h1>
-              <p className="text-xl text-white/90 leading-relaxed">
+              <p className="text-xl text-white/90 leading-relaxed max-w-2xl">
                 Automated beach sediment analysis using advanced AI and citizen science 
                 for sustainable coastal management and climate resilience.
               </p>
@@ -77,14 +77,14 @@ export const HeroSection = () => {
               <Button size="lg" variant="secondary" className="shadow-ocean" asChild>
                 <a href="/analysis">Start Analysis</a>
               </Button>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
+              <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10" asChild>
                 <a href="/analysis">AI Analysis</a>
               </Button>
             </div>
           </div>
 
           {/* Right column intentionally simplified: direct CTA only */}
-          <div className="bg-card/95 backdrop-blur-sm rounded-2xl p-8 shadow-ocean border border-white/20">
+          <div className="bg-card/90 backdrop-blur-sm rounded-2xl p-8 shadow-ocean border border-white/20">
             <div className="space-y-6 text-center">
               <h2 className="text-2xl font-bold">Analyze Your Beach</h2>
               <p className="text-muted-foreground">

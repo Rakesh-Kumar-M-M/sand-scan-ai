@@ -1,17 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Waves } from "lucide-react";
-import { AuthDialog } from "@/components/AuthDialog";
-import { useAuth } from "@/context/AuthContext";
+// Auth removed for frontend-only build
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const { user, login, logout } = useAuth();
 
-  const handleLoginSuccess = (u: { email: string; name?: string }, token: string) => {
-    login(u, token);
-  };
+  const handleLoginSuccess = () => {};
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -49,16 +45,6 @@ export const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            {user ? (
-              <>
-                <div className="text-sm">Hi, {user.name || user.email}</div>
-                <Button variant="outline" size="sm" onClick={logout}>Logout</Button>
-              </>
-            ) : (
-              <Button variant="outline" size="sm" onClick={() => setAuthOpen(true)}>
-                Sign In
-              </Button>
-            )}
             <Button size="sm" className="bg-gradient-ocean hover:shadow-ocean transition-all duration-300">
               Get Started
             </Button>
@@ -88,9 +74,6 @@ export const Navigation = () => {
                 </a>
               ))}
               <div className="pt-4 space-y-2">
-                <Button variant="outline" size="sm" className="w-full">
-                  Sign In
-                </Button>
                 <Button size="sm" className="w-full bg-gradient-ocean">
                   Get Started
                 </Button>
@@ -99,7 +82,6 @@ export const Navigation = () => {
           </div>
         )}
       </div>
-      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} onLoginSuccess={handleLoginSuccess} />
     </nav>
   );
 };

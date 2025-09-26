@@ -9,8 +9,8 @@ All colors MUST be HSL for perfect theming.
 @layer base {
   :root {
     /* Base colors - Sandy shore to deep ocean */
-    --background: 45 15% 97%;
-    --foreground: 213 25% 15%;
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
 
     /* Cards & surfaces - Clean coastal whites */
     --card: 0 0% 100%;
@@ -20,29 +20,29 @@ All colors MUST be HSL for perfect theming.
     --popover-foreground: 213 25% 15%;
 
     /* Primary - Deep ocean blue */
-    --primary: 213 85% 25%;
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 213 85% 45%;
+    --primary: 213 80% 32%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 213 84% 46%;
 
     /* Secondary - Soft coastal blue */
-    --secondary: 203 23% 88%;
-    --secondary-foreground: 213 85% 25%;
+    --secondary: 210 18% 92%;
+    --secondary-foreground: 222 47% 11%;
 
     /* Muted - Beach sand tones */
-    --muted: 45 15% 93%;
-    --muted-foreground: 213 15% 45%;
+    --muted: 210 16% 95%;
+    --muted-foreground: 215 20% 45%;
 
     /* Accent - Coral reef */
-    --accent: 14 78% 65%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 200 100% 45%;
+    --accent-foreground: 0 0% 100%;
 
     /* Success - Seaweed green */
     --success: 158 64% 35%;
     --success-foreground: 0 0% 98%;
 
     /* Warning - Sunset orange */
-    --warning: 32 95% 58%;
-    --warning-foreground: 213 25% 15%;
+    --warning: 28 90% 55%;
+    --warning-foreground: 222 47% 11%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -58,7 +58,7 @@ All colors MUST be HSL for perfect theming.
     --gradient-ocean: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-shore: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--warning)));
     --gradient-sand: linear-gradient(180deg, hsl(var(--muted)), hsl(var(--background)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 50%, hsl(var(--accent)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary) / 0.9) 0%, hsl(var(--primary-glow) / 0.85) 50%, hsl(var(--accent) / 0.8) 100%);
 
     /* Shadows - Coastal depth effects */
     --shadow-ocean: 0 20px 60px -10px hsl(var(--primary) / 0.3);
