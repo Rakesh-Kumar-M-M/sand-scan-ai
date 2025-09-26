@@ -9,6 +9,7 @@ interface LocationData {
   longitude: number;
   accuracy?: number;
   timestamp: number;
+  placeName?: string;
 }
 
 interface GrainAnalysis {
@@ -84,6 +85,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 <p className="text-sm font-mono">
                   {formatCoordinate(location.latitude)}, {formatCoordinate(location.longitude)}
                 </p>
+                {location.placeName && (
+                  <p className="text-sm">{location.placeName}</p>
+                )}
                 {location.accuracy && (
                   <Badge variant="outline" className="text-xs">
                     ±{Math.round(location.accuracy)}m accuracy

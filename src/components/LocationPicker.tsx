@@ -1,117 +1,144 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, AlertCircle } from 'lucide-react';
+import { MapPin, Navigation, Loader2 } from 'lucide-react';
 import { Geolocation } from '@capacitor/geolocation';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface LocationData {
   latitude: number;
   longitude: number;
   accuracy?: number;
   timestamp: number;
+  placeName?: string;
 }
 
 interface LocationPickerProps {
-  onLocationSelect: (location: LocationData) => void;
+  onLocationSelect: (location: LocationData | null) => void;
   selectedLocation?: LocationData | null;
+  markerImageUrl?: string;
 }
 
 export const LocationPicker: React.FC<LocationPickerProps> = ({
   onLocationSelect,
-  selectedLocation
+  selectedLocation,
+  markerImageUrl
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const marker = useRef<mapboxgl.Marker | null>(null);
-  
-  const [mapboxToken, setMapboxToken] = useState<string>('');
+  const mapRef = useRef<L.Map | null>(null);
+  const markerRef = useRef<L.Layer | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-  const [currentLocation, setCurrentLocation] = useState<LocationData | null>(null);
 
-  // Initialize map when mapbox token is available
+  // Initialize Leaflet map
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current) return;
+    if (mapRef.current) return;
 
-    mapboxgl.accessToken = mapboxToken;
-    
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/satellite-v9',
-      center: [0, 20], // Default center
+    mapRef.current = L.map(mapContainer.current, {
+      center: [20, 0],
       zoom: 2,
+      minZoom: 2,
+      maxZoom: 18,
+      worldCopyJump: false,
+      zoomControl: false,
+      wheelPxPerZoomLevel: 60,
+      wheelDebounceTime: 20,
+      zoomSnap: 0.25,
+      zoomDelta: 1,
+      touchZoom: 'center',
+      tap: true,
+      attributionControl: false
     });
 
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    // Add zoom control top-right for better reachability
+    L.control.zoom({ position: 'topright' }).addTo(mapRef.current);
+    // No attribution or scale controls for a clean map view
 
-    // Add click handler for manual location selection
-    map.current.on('click', (e) => {
-      const { lng, lat } = e.lngLat;
-      const locationData: LocationData = {
-        latitude: lat,
-        longitude: lng,
-        timestamp: Date.now()
-      };
-      
-      updateMarker(lng, lat);
-      onLocationSelect(locationData);
+    // Single, attractive world map (Carto Voyager), no wrap
+    const cartoUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    L.tileLayer(cartoUrl, { noWrap: true }).addTo(mapRef.current);
+
+    const bounds = L.latLngBounds(L.latLng(-85, -180), L.latLng(85, 180));
+    mapRef.current.setMaxBounds(bounds);
+    mapRef.current.setView([20, 0], 2, { animate: true });
+
+    mapRef.current.on('click', async (e: any) => {
+      const { lat, lng } = e.latlng;
+      await setMarkerAndReverseGeocode(lng, lat);
     });
 
-    return () => {
-      map.current?.remove();
-    };
-  }, [mapboxToken, onLocationSelect]);
+    // Keyboard navigation for accessibility
+    mapRef.current.keyboard.enable();
+  }, []);
 
-  // Update marker position
-  const updateMarker = (lng: number, lat: number) => {
-    if (!map.current) return;
+  const createMarkerLayer = useCallback((lat: number, lng: number): L.Layer => {
+    if (markerImageUrl) {
+      const size = 56;
+      const html = `<div style="width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;border:2px solid #ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.3);background:#eee;display:flex;align-items:center;justify-content:center;">
+        <img src="${markerImageUrl}" alt="marker" style="width:100%;height:100%;object-fit:cover;" />
+      </div>`;
+      const icon = L.divIcon({
+        html,
+        className: 'cw-img-marker',
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2]
+      });
+      return L.marker([lat, lng], { icon });
+    }
+    return L.circleMarker([lat, lng], {
+      radius: 8,
+      color: '#0ea5e9',
+      weight: 2,
+      fill: true,
+      fillOpacity: 0.8
+    });
+  }, [markerImageUrl]);
 
-    if (marker.current) {
-      marker.current.remove();
+  const setMarkerAndReverseGeocode = useCallback(async (lng: number, lat: number) => {
+    if (!mapRef.current) return;
+
+    if (markerRef.current) {
+      markerRef.current.remove();
     }
 
-    marker.current = new mapboxgl.Marker({
-      color: '#0ea5e9',
-      scale: 1.2
-    })
-      .setLngLat([lng, lat])
-      .addTo(map.current);
+    markerRef.current = createMarkerLayer(lat, lng).addTo(mapRef.current);
+    mapRef.current.setView([lat, lng], 15);
 
-    map.current.flyTo({
-      center: [lng, lat],
-      zoom: 15,
-      duration: 1500
-    });
-  };
+    let placeName: string | undefined;
+    try {
+      const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+      const data = await resp.json();
+      placeName = data?.display_name;
+    } catch (err) {
+      console.warn('Reverse geocoding failed', err);
+    }
+
+    const locationData: LocationData = {
+      latitude: lat,
+      longitude: lng,
+      timestamp: Date.now(),
+      placeName
+    };
+    onLocationSelect(locationData);
+  }, [onLocationSelect, createMarkerLayer]);
 
   // Get current GPS location
   const getCurrentLocation = async () => {
     setLoading(true);
     setError('');
-
     try {
       const coordinates = await Geolocation.getCurrentPosition({
         enableHighAccuracy: true,
         timeout: 10000
       });
-
-      const locationData: LocationData = {
-        latitude: coordinates.coords.latitude,
-        longitude: coordinates.coords.longitude,
-        accuracy: coordinates.coords.accuracy,
-        timestamp: coordinates.timestamp
-      };
-
-      setCurrentLocation(locationData);
-      onLocationSelect(locationData);
-
-      if (map.current) {
-        updateMarker(locationData.longitude, locationData.latitude);
-      }
+      await setMarkerAndReverseGeocode(
+        coordinates.coords.longitude,
+        coordinates.coords.latitude
+      );
     } catch (err) {
       setError('Unable to get current location. Please select manually on the map.');
       console.error('Geolocation error:', err);
@@ -120,12 +147,21 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
     }
   };
 
-  // Update marker when selectedLocation changes
-  useEffect(() => {
-    if (selectedLocation && map.current) {
-      updateMarker(selectedLocation.longitude, selectedLocation.latitude);
+  const setMarkerOnly = useCallback((lng: number, lat: number) => {
+    if (!mapRef.current) return;
+    if (markerRef.current) {
+      markerRef.current.remove();
     }
-  }, [selectedLocation]);
+    markerRef.current = createMarkerLayer(lat, lng).addTo(mapRef.current);
+    mapRef.current.setView([lat, lng], 15);
+  }, [createMarkerLayer]);
+
+  // Update marker when selectedLocation changes externally (no reverse geocode to prevent shake)
+  useEffect(() => {
+    if (selectedLocation && mapRef.current) {
+      setMarkerOnly(selectedLocation.longitude, selectedLocation.latitude);
+    }
+  }, [selectedLocation, setMarkerOnly]);
 
   return (
     <Card className="w-full">
@@ -136,34 +172,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Mapbox Token Input */}
-        {!mapboxToken && (
-          <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
-            <div className="flex items-start space-x-3">
-              <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
-              <div className="space-y-3 flex-1">
-                <p className="text-sm">
-                  To use the interactive map, please enter your Mapbox public token:
-                </p>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    placeholder="Enter Mapbox public token"
-                    className="flex-1 px-3 py-2 border border-input rounded-md bg-background text-sm"
-                    onChange={(e) => setMapboxToken(e.target.value)}
-                  />
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => window.open('https://mapbox.com/', '_blank')}
-                  >
-                    Get Token
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* No API key required for Leaflet + OSM */}
 
         {/* GPS Location Button */}
         <div className="flex space-x-2">
@@ -189,17 +198,37 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         )}
 
         {/* Map Container */}
-        {mapboxToken && (
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">
-              Click on the map to select a location manually
-            </p>
-            <div 
-              ref={mapContainer} 
-              className="w-full h-64 rounded-lg border shadow-gentle"
-            />
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Click on the map to select a location manually
+          </p>
+          <div 
+            ref={mapContainer} 
+            className="w-full h-80 rounded-lg border shadow-gentle"
+          />
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="space-x-2">
+              <Button size="sm" variant="outline" onClick={() => mapRef.current?.flyTo([20, 0], 2, { duration: 0.6 })}>World View</Button>
+              <Button size="sm" variant="outline" onClick={() => {
+                if (markerRef.current && mapRef.current) {
+                  const ll = (markerRef.current as any).getLatLng?.();
+                  if (ll) mapRef.current.flyTo([ll.lat, ll.lng], 15, { duration: 0.6 });
+                }
+              }}>Go to Marker</Button>
+              <Button size="sm" variant="outline" onClick={() => {
+                if (markerRef.current) {
+                  markerRef.current.remove();
+                  markerRef.current = null;
+                }
+                onLocationSelect(null);
+                mapRef.current?.flyTo([20, 0], 2, { duration: 0.6 });
+              }}>Reset Location</Button>
+              <Button size="sm" onClick={() => mapRef.current?.zoomIn(1, { animate: true })}>Zoom In</Button>
+              <Button size="sm" onClick={() => mapRef.current?.zoomOut(1, { animate: true })}>Zoom Out</Button>
+            </div>
+            <span>Use mouse wheel, pinch, or + / - to zoom</span>
           </div>
-        )}
+        </div>
 
         {/* Selected Location Info */}
         {selectedLocation && (
@@ -217,6 +246,12 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
                 <p className="text-muted-foreground">Longitude</p>
                 <p className="font-mono">{selectedLocation.longitude.toFixed(6)}</p>
               </div>
+              {selectedLocation.placeName && (
+                <div className="col-span-2">
+                  <p className="text-muted-foreground">Place</p>
+                  <p className="font-medium">{selectedLocation.placeName}</p>
+                </div>
+              )}
               {selectedLocation.accuracy && (
                 <div className="col-span-2">
                   <p className="text-muted-foreground">Accuracy</p>

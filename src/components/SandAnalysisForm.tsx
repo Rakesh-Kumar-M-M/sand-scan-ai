@@ -13,6 +13,7 @@ interface LocationData {
   longitude: number;
   accuracy?: number;
   timestamp: number;
+  placeName?: string;
 }
 
 interface GrainAnalysis {
@@ -30,6 +31,7 @@ export const SandAnalysisForm = () => {
   const [analysis, setAnalysis] = useState<GrainAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [activeTab, setActiveTab] = useState('upload');
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
   // Mock analysis function - replace with actual AI model integration
   const performAnalysis = async () => {
@@ -98,7 +100,16 @@ export const SandAnalysisForm = () => {
                   <CardTitle>Upload Sand Sample Image</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <FileUpload onFileSelect={setSelectedFile} />
+                  <FileUpload onFileSelect={(file) => {
+                    setSelectedFile(file);
+                    try {
+                      const url = URL.createObjectURL(file);
+                      setImagePreviewUrl((prev) => {
+                        if (prev) URL.revokeObjectURL(prev);
+                        return url;
+                      });
+                    } catch {}
+                  }} />
                   
                   {selectedFile && (
                     <div className="mt-6 p-4 bg-success/10 border border-success/20 rounded-lg">
@@ -106,6 +117,23 @@ export const SandAnalysisForm = () => {
                       <p className="text-sm text-muted-foreground mt-1">
                         Next, select the location where this sample was collected.
                       </p>
+                      {imagePreviewUrl && (
+                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
+                          <div className="sm:col-span-2">
+                            <img src={imagePreviewUrl} alt="Uploaded preview" className="max-h-56 rounded-md border object-contain bg-muted/30 w-full" />
+                          </div>
+                          <div className="space-y-2">
+                            <Button 
+                              onClick={() => setActiveTab('location')}
+                              className="w-full"
+                              size="sm"
+                            >
+                              Set Location →
+                            </Button>
+                            <a href={imagePreviewUrl} target="_blank" rel="noreferrer" className="text-xs underline text-primary">View full size</a>
+                          </div>
+                        </div>
+                      )}
                       <Button 
                         onClick={() => setActiveTab('location')}
                         className="mt-3"
@@ -124,6 +152,7 @@ export const SandAnalysisForm = () => {
               <LocationPicker 
                 onLocationSelect={setSelectedLocation}
                 selectedLocation={selectedLocation}
+                markerImageUrl={imagePreviewUrl || undefined}
               />
               
               {selectedLocation && selectedFile && (
@@ -159,6 +188,16 @@ export const SandAnalysisForm = () => {
                           </>
                         )}
                       </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {!selectedFile && (
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-center space-y-3">
+                      <p className="text-sm text-muted-foreground">Please upload a sample image first.</p>
+                      <Button onClick={() => setActiveTab('upload')} variant="outline" size="sm">Go to Upload</Button>
                     </div>
                   </CardContent>
                 </Card>

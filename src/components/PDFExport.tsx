@@ -10,6 +10,7 @@ interface LocationData {
   longitude: number;
   accuracy?: number;
   timestamp: number;
+  placeName?: string;
 }
 
 interface GrainAnalysis {
@@ -80,6 +81,10 @@ export const PDFExport: React.FC<PDFExportProps> = ({
       yPosition += 6;
       pdf.text(`Longitude: ${location.longitude.toFixed(6)}°`, margin, yPosition);
       yPosition += 6;
+      if (location.placeName) {
+        pdf.text(`Place: ${location.placeName}`, margin, yPosition);
+        yPosition += 6;
+      }
       if (location.accuracy) {
         pdf.text(`GPS Accuracy: ±${Math.round(location.accuracy)} meters`, margin, yPosition);
         yPosition += 6;
