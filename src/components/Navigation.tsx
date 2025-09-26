@@ -10,8 +10,8 @@ export const Navigation = () => {
   const handleLoginSuccess = () => {};
 
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Analysis", href: "/analysis" },
+    { name: "Home", href: "#/" },
+    { name: "Analysis", href: "#/analysis" },
     { name: "Modules", href: "#modules" },
     { name: "Research", href: "#research" },
     { name: "Community", href: "#community" },

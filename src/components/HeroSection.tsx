@@ -75,10 +75,10 @@ export const HeroSection = () => {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" variant="secondary" className="shadow-ocean" asChild>
-                <a href="/analysis">Start Analysis</a>
+                <a href="#/analysis">Start Analysis</a>
               </Button>
               <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10" asChild>
-                <a href="/analysis">AI Analysis</a>
+                <a href="#/analysis">AI Analysis</a>
               </Button>
             </div>
           </div>
