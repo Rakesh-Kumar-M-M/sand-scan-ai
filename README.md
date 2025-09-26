@@ -78,9 +78,23 @@ VITE_API_BASE=http://localhost:4000
 VITE_GOOGLE_CLIENT_ID=your-google-oauth-web-client-id.apps.googleusercontent.com
 ```
 
-## How can I deploy this project?
+## Deploy (frontend-only) to Vercel
 
-Simply open [Lovable](https://lovable.dev/projects/8eb92ecb-59d4-44cd-8c94-68df5f981e4d) and click on Share -> Publish.
+This project is frontend-only. To deploy on Vercel:
+
+1. Ensure Node 18+ is selected in Vercel project settings.
+2. Set Build Command: `npm run build`
+3. Set Output Directory: `dist`
+4. Framework Preset: `Vite`
+5. `vercel.json` is included to route all paths to `index.html` for SPA routing.
+
+Local build:
+
+```sh
+npm install
+npm run build
+npm run preview
+```
 
 ## Can I connect a custom domain to my Lovable project?
 
