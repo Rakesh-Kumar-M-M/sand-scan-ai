@@ -5,25 +5,25 @@ export const StatsSection = () => {
   const stats = [
     {
       icon: Camera,
-      value: "15,000+",
+      value: "0",
       label: "Sand Images Analyzed",
       description: "AI-powered grain size analysis",
     },
     {
       icon: MapPin,
-      value: "500+",
+      value: "0",
       label: "Beach Locations",
       description: "Across coastal regions worldwide",
     },
     {
       icon: Users,
-      value: "2,800+",
+      value: "0",
       label: "Citizen Scientists",
       description: "Contributing to coastal research",
     },
     {
       icon: Microscope,
-      value: "98.5%",
+      value: "0%",
       label: "Analysis Accuracy",
       description: "Validated against lab measurements",
     },

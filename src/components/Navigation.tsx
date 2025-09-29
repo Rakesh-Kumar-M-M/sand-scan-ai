@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Waves } from "lucide-react";
-// Auth removed for frontend-only build
+import { Menu, X } from "lucide-react";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
-
-  const handleLoginSuccess = () => {};
 
   const navItems = [
     { name: "Home", href: "#/" },
@@ -21,13 +17,16 @@ export const Navigation = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-gentle">
       <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+        <div className="flex items-center justify-between h-20">
+          
+          {/* Logo + Name */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-ocean rounded-xl flex items-center justify-center">
-              <Waves className="h-6 w-6 text-white" />
-            </div>
-            <div className="font-bold text-xl text-primary">CoastalWatch</div>
+            <img
+              src="/Arenis_logo.jpeg"   // make sure it's in public/
+              alt="Arenis"
+              className="w-20 h-20 rounded-2xl object-cover"
+            />
+            <div className="font-bold text-2xl text-primary">ARENIS</div>
           </div>
 
           {/* Desktop Navigation */}
@@ -45,7 +44,10 @@ export const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button size="sm" className="bg-gradient-ocean hover:shadow-ocean transition-all duration-300">
+            <Button
+              size="sm"
+              className="bg-gradient-ocean hover:shadow-ocean transition-all duration-300"
+            >
               Get Started
             </Button>
           </div>

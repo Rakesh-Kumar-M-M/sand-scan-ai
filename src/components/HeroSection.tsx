@@ -95,7 +95,7 @@ export const HeroSection = () => {
                 size="lg"
                 asChild
               >
-                <a href="/analysis">Go to Analysis</a>
+                <a href="#/analysis">Go to Analysis</a>
               </Button>
             </div>
           </div>
