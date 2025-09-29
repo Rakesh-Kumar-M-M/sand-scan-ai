@@ -19,13 +19,13 @@ export const HeroSection = () => {
           <div className="space-y-8 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)]">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                AI-Powered
+                Sand Grain-Size
                 <span className="block bg-gradient-to-r from-accent to-warning bg-clip-text text-transparent">
-                  Coastal Monitoring
+                  Mapping System
                 </span>
               </h1>
               <p className="text-xl text-white/90 leading-relaxed max-w-2xl">
-                Automated beach sediment analysis using advanced AI and citizen science 
+                Automated beach sediment analysis and citizen science 
                 for sustainable coastal management and climate resilience.
               </p>
             </div>
@@ -37,7 +37,7 @@ export const HeroSection = () => {
                   <Microscope className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">AI Analysis</h3>
+                  <h3 className="font-semibold">Analysis</h3>
                   <p className="text-sm text-white/80">Grain size detection</p>
                 </div>
               </a>
@@ -77,9 +77,7 @@ export const HeroSection = () => {
               <Button size="lg" variant="secondary" className="shadow-ocean" asChild>
                 <a href="#/analysis">Start Analysis</a>
               </Button>
-              <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10" asChild>
-                <a href="#/analysis">AI Analysis</a>
-              </Button>
+              
             </div>
           </div>
 
@@ -88,7 +86,7 @@ export const HeroSection = () => {
             <div className="space-y-6 text-center">
               <h2 className="text-2xl font-bold">Analyze Your Beach</h2>
               <p className="text-muted-foreground">
-                Start AI analysis and set your location on the map
+                Start analysis and set your location on the map
               </p>
               <Button 
                 className="w-full bg-gradient-ocean hover:shadow-ocean transition-all duration-300"

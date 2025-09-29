@@ -70,12 +70,12 @@ export const Footer = () => {
           <div className="lg:col-span-1 space-y-6">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center">
-                <Waves className="h-7 w-7 text-white" />
+                <img src="/Arenis_logo.jpeg" alt="" />
               </div>
-              <div className="font-bold text-2xl">CoastalWatch</div>
+              <div className="font-bold text-2xl">Arenis</div>
             </div>
             <p className="text-primary-foreground/80 leading-relaxed">
-              Advancing coastal science through AI-powered monitoring and community engagement for a sustainable future.
+              Advancing coastal science  monitoring and community engagement for a sustainable future.
             </p>
             <div className="flex space-x-4">
               <Button size="sm" variant="ghost" className="text-primary-foreground hover:text-accent">
@@ -115,7 +115,7 @@ export const Footer = () => {
         <div className="pt-8 border-t border-white/20">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-primary-foreground/80">
-              © 2024 CoastalWatch. Advancing coastal science through technology.
+              © 2025 CoastalWatch. Advancing coastal science through technology.
             </div>
             <div className="flex items-center space-x-6 text-sm">
               <a href="#privacy" className="text-primary-foreground/80 hover:text-accent transition-colors">
