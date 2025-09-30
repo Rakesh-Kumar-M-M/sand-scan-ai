@@ -37,7 +37,7 @@ export const PDFExport: React.FC<PDFExportProps> = ({
 
   const generatePDF = async () => {
     setIsGenerating(true);
-    
+
     try {
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
@@ -47,15 +47,14 @@ export const PDFExport: React.FC<PDFExportProps> = ({
 
       // Header
       pdf.setFontSize(24);
-      pdf.setTextColor(33, 95, 168); // Primary color
+      pdf.setTextColor(33, 95, 168);
       pdf.text('CoastalWatch Analysis Report', margin, yPosition);
       yPosition += 15;
 
       // Subtitle
       pdf.setFontSize(14);
       pdf.setTextColor(100, 100, 100);
-      pdf.text('AI-Powered Beach Sediment Analysis', margin, yPosition);
-      yPosition += 20;
+      yPosition += 15;
 
       // Sample Information Section
       pdf.setFontSize(16);
@@ -129,7 +128,7 @@ export const PDFExport: React.FC<PDFExportProps> = ({
 
       pdf.setFontSize(12);
       let characteristics: string[] = [];
-      
+
       if (analysis.classification === 'fine') {
         characteristics = [
           '• Typically found in low-energy environments',
@@ -183,7 +182,28 @@ export const PDFExport: React.FC<PDFExportProps> = ({
         yPosition += 6;
       });
 
-      // Try to capture and add the analysis results chart
+      // --- Add Grain Size Map (from public folder) ---
+      try {
+        const mapImg = new Image();
+        mapImg.src = '/grain_size_map.jpeg';
+
+        await new Promise<void>((resolve, reject) => {
+          mapImg.onload = () => resolve();
+          mapImg.onerror = reject;
+        });
+
+        const mapWidth = pageWidth - (margin * 2);
+        const mapHeight = (mapImg.height * mapWidth) / mapImg.width;
+
+        pdf.addPage();
+        pdf.setFontSize(16);
+        pdf.text('Grain Size Map', margin, margin);
+        pdf.addImage(mapImg, 'JPEG', margin, margin + 20, mapWidth, mapHeight);
+      } catch (error) {
+        console.warn('Could not add grain size map:', error);
+      }
+
+      // --- Add dynamic analysis results chart ---
       try {
         const resultsElement = document.getElementById('analysis-results');
         if (resultsElement) {
@@ -192,19 +212,15 @@ export const PDFExport: React.FC<PDFExportProps> = ({
             useCORS: true,
             backgroundColor: '#ffffff'
           });
-          
-          const imgData = canvas.toDataURL('image/png');
-          const imgWidth = pageWidth - (margin * 2);
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          
-          // Add new page for the visual results
+
+          const chartImgData = canvas.toDataURL('image/png');
+          const chartWidth = pageWidth - (margin * 2);
+          const chartHeight = (canvas.height * chartWidth) / canvas.width;
+
           pdf.addPage();
           pdf.setFontSize(16);
           pdf.text('Visual Analysis Results', margin, margin);
-          
-          if (imgHeight < pageHeight - 60) {
-            pdf.addImage(imgData, 'PNG', margin, margin + 20, imgWidth, imgHeight);
-          }
+          pdf.addImage(chartImgData, 'PNG', margin, margin + 20, chartWidth, chartHeight);
         }
       } catch (error) {
         console.warn('Could not capture visual results:', error);
@@ -222,7 +238,6 @@ export const PDFExport: React.FC<PDFExportProps> = ({
       const coords = `${location.latitude.toFixed(3)}_${location.longitude.toFixed(3)}`;
       const filename = `CoastalWatch_Analysis_${coords}_${date}.pdf`;
 
-      // Save the PDF
       pdf.save(filename);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -243,10 +258,10 @@ export const PDFExport: React.FC<PDFExportProps> = ({
       <CardContent>
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Generate a comprehensive PDF report containing all analysis results, 
+            Generate a comprehensive PDF report containing all analysis results,
             location data, and environmental context for scientific documentation.
           </p>
-          
+
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="font-medium">Report includes:</p>
@@ -262,8 +277,8 @@ export const PDFExport: React.FC<PDFExportProps> = ({
               <ul className="mt-2 space-y-1 text-muted-foreground">
                 <li>• Environmental context</li>
                 <li>• Ecological implications</li>
+                <li>• Grain size map</li>
                 <li>• Visual analysis charts</li>
-                <li>• Analysis timestamp</li>
               </ul>
             </div>
           </div>
